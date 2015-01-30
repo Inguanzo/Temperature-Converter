@@ -26,34 +26,39 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 			mainCon.remove(myLabel);
 			myLabel = new Label({left:0, right:0, height: 30, top: 40, string: tempVal, style: labelStyle})
 			
+			//from Fahrenheit to all
 			if (startMeasurementVal == "Fahrenheit") {
 				if (endMeasurementVal == "Fahrenheit") {
 					convertedVal = tempVal;
-					mainCon.remove(myConvertedLabel);
-					myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: "Faren", style: labelStyle})
-					mainCon.add(myConvertedLabel);
+					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Celsius") {
-					convertedVal = tempVal;
-					mainCon.remove(myConvertedLabel);
-					myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: "Celsius", style: labelStyle})
-					mainCon.add(myConvertedLabel);
+					convertedVal = (tempVal - 32)/1.8;
+					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Kelvin") {
-					convertedVal = tempVal;
-					mainCon.remove(myConvertedLabel);
-					myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: "Kelvin", style: labelStyle})
-					mainCon.add(myConvertedLabel);
+					convertedVal = (((tempVal - 32) * 5)/9) + 273.15
+					convertFunction(convertedVal);
 				}
 			}		
+			
+			//from Celsius to all
+			
+			
+			//from Kelvin to all
+			
+			
 			
 			mainCon.add(myLabel);	
 	}}})
 }});
 
-//
-function myFunction() {
-	var x = 0;
+//conversion Function
+function convertFunction(measure) {
+	convertedVal = tempVal;
+	mainCon.remove(myConvertedLabel);
+	myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: measure, style: labelStyle})
+	mainCon.add(myConvertedLabel);
 };
 
 //measurement
