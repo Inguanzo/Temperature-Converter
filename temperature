@@ -6,11 +6,13 @@ var BUTTONS = require('controls/buttons');
 var startMeasurementVal = "";
 var endMeasurementVal = "";
 
+
 //skins and styles
 var whiteS = new Skin({fill:"white"});
 var greyS = new Skin({fill:"grey"});
 var labelStyle = new Style( { font: "bold 40px", color:"white" } );
 var bigText = new Style({font:"bold 20px", color:"#333333"});
+
 
 //slider info
 var myLabel = new Label({left:0, right:0, height: 40, top: 100, string: "", style: labelStyle})
@@ -21,7 +23,6 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 	behavior: Object.create(SLIDERS.HorizontalSliderBehavior.prototype, {
 		onValueChanged: { value: function(container){
 			SLIDERS.HorizontalSliderBehavior.prototype.onValueChanged.call(this, container);
-			//tempVal.onValueChanged.call(mainCon, container);
 			tempVal = this.data.value;
 			mainCon.remove(myLabel);
 			myLabel = new Label({left:0, right:0, height: 30, top: 40, string: tempVal, style: labelStyle})
@@ -30,6 +31,14 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 	}}})
 }});
 
+
+function headerChange() {
+	if(changeStart){
+	
+	};
+};
+
+
 //conversion Function
 function convertFunction(measure) {
 	convertedVal = tempVal;
@@ -37,6 +46,7 @@ function convertFunction(measure) {
 	myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: measure, style: labelStyle})
 	mainCon.add(myConvertedLabel);
 };
+
 
 ///from Fahrenheit,Celsius,Kelvin to all
 function fromOneToOther(){
@@ -88,6 +98,7 @@ function fromOneToOther(){
 			}
 };
 
+
 //measurement
 var myStartMeasurement = BUTTONS.RadioGroup.template(function($){ return{
 	top:100, bottom:50, left:50, right:50,
@@ -96,6 +107,7 @@ var myStartMeasurement = BUTTONS.RadioGroup.template(function($){ return{
 			startMeasurementVal = buttonName;
 	}}})
 }});
+
 
 var myEndMeasurement = BUTTONS.RadioGroup.template(function($){ return{
 	bottom:100, left:50, right:50,
@@ -114,12 +126,12 @@ var buttonBehavior = function(content, data){
 }
 buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 	onTap: { value:  function(button){
-		trace("Button was tapped.\n");
 		if(tempVal != "" && startMeasurementVal !=  "" && endMeasurementVal != ""){
 			fromOneToOther();
 		}
 	}}
 });
+
 
 var myButtonTemplate = BUTTONS.Button.template(function($){ return{
 	bottom:10, left:50, right:50,
@@ -128,7 +140,6 @@ var myButtonTemplate = BUTTONS.Button.template(function($){ return{
 	],
 	behavior: new buttonBehavior
 }});
-
 
 
 // calls
@@ -147,4 +158,3 @@ mainCon.add(startMeasurement);
 mainCon.add(endMeasurement);
 mainCon.add(slider);
 mainCon.add(button);
-
