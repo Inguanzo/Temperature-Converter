@@ -9,25 +9,33 @@ var endMeasurementVal = "";
 
 //skins and styles
 var whiteS = new Skin({fill:"white"});
-var greyS = new Skin({fill:"grey"});
-var labelStyle = new Style( { font: "bold 40px", color:"white" } );
+var lightBlueS = new Skin({fill:"#89CFF0"});
+var labelStyle = new Style( { font: "bold 40px", color:"#E52B50" } );
+
+var labelFromStyle = new Style( { font: "bold 40px", color:"gray" } );
+var labelToStyle = new Style( { font: "bold 40px", color:"#3B444B" } );
+
+var smallLabelStyle = new Style( { font: "bold 20px", color:"#E52B50" } );
+
 var bigText = new Style({font:"bold 20px", color:"#333333"});
+
+//constant labels
+var myFromLabel = new Label({left:0, right:250, height: 20, top: 10, string: "From:", style: smallLabelStyle})
+var myToLabel = new Label({left:0, right:250, height: 20, bottom: 200, string: "To:", style: smallLabelStyle})
 
 
 //slider info
-var myLabel = new Label({left:0, right:0, height: 40, top: 100, string: "", style: labelStyle})
-var myConvertedLabel = new Label({left:0, right:0, height: 40, bottom: 100, string: "", style: labelStyle})
+var myLabel = new Label({left:0, right:0, height: 20, top: 60, string: "start", style: labelStyle})
+var myConvertedLabel = new Label({left:0, right:0, height: 20, bottom: 60, string: "", style: labelStyle})
 
 var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 	height:50, left:50, right:50,
 	behavior: Object.create(SLIDERS.HorizontalSliderBehavior.prototype, {
 		onValueChanged: { value: function(container){
 			SLIDERS.HorizontalSliderBehavior.prototype.onValueChanged.call(this, container);
-			tempVal = this.data.value;
-			mainCon.remove(myLabel);
-			myLabel = new Label({left:0, right:0, height: 30, top: 40, string: tempVal, style: labelStyle})
+			tempVal = Math.round(this.data.value);
+			myLabel.string = tempVal;
 			fromOneToOther();		
-			mainCon.add(myLabel);	
 	}}})
 }});
 
@@ -42,9 +50,7 @@ function headerChange() {
 //conversion Function
 function convertFunction(measure) {
 	convertedVal = tempVal;
-	mainCon.remove(myConvertedLabel);
-	myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: measure, style: labelStyle})
-	mainCon.add(myConvertedLabel);
+	myConvertedLabel.string = measure;
 };
 
 
@@ -52,15 +58,15 @@ function convertFunction(measure) {
 function fromOneToOther(){
 			if (startMeasurementVal == "Fahrenheit") {
 				if (endMeasurementVal == "Fahrenheit") {
-					convertedVal = tempVal;
+					convertedVal = Math.round(tempVal);
 					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Celsius") {
-					convertedVal = (tempVal - 32)/1.8;
+					convertedVal = Math.round((tempVal - 32)/1.8);
 					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Kelvin") {
-					convertedVal = (((tempVal - 32) * 5)/9) + 273.15
+					convertedVal = Math.round((((tempVal - 32) * 5)/9) + 273.15);
 					convertFunction(convertedVal);
 				}
 			}		
@@ -68,15 +74,15 @@ function fromOneToOther(){
 			//from Celsius to all
 			if (startMeasurementVal == "Celsius") {
 				if (endMeasurementVal == "Fahrenheit") {
-					convertedVal = (tempVal*1.8)+32;
+					convertedVal = Math.round((tempVal*1.8)+32);
 					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Celsius") {
-					convertedVal = tempVal;
+					convertedVal = Math.round(tempVal);
 					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Kelvin") {
-					convertedVal = tempVal + 273.15;
+					convertedVal = Math.round(tempVal + 273.15);
 					convertFunction(convertedVal);
 				}
 			}
@@ -84,15 +90,15 @@ function fromOneToOther(){
 			//from Kelvin to all
 			if (startMeasurementVal == "Kelvin") {
 				if (endMeasurementVal == "Fahrenheit") {
-					convertedVal = ((tempVal - 273.15) * 1.8) + 32;
+					convertedVal = Math.round(((tempVal - 273.15) * 1.8) + 32);
 					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Celsius") {
-					convertedVal = tempVal - 273.15;
+					convertedVal = Math.round(tempVal - 273.15);
 					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Kelvin") {
-					convertedVal = tempVal;
+					convertedVal = Math.round(tempVal);
 					convertFunction(convertedVal);
 				}
 			}
@@ -101,7 +107,7 @@ function fromOneToOther(){
 
 //measurement
 var myStartMeasurement = BUTTONS.RadioGroup.template(function($){ return{
-	top:100, bottom:50, left:50, right:50,
+	top:100, left:50, right:50,
 	behavior: Object.create(BUTTONS.RadioGroupBehavior.prototype, {
 		onRadioButtonSelected: { value: function(buttonName){
 			startMeasurementVal = buttonName;
@@ -115,30 +121,10 @@ var myEndMeasurement = BUTTONS.RadioGroup.template(function($){ return{
 		onRadioButtonSelected: { value: function(buttonName){
 			trace("end measurement:" + buttonName + " was selected.\n");
 			endMeasurementVal = buttonName;
-			
-	}}})
-}});
-
-
-//Button
-var buttonBehavior = function(content, data){
-	BUTTONS.ButtonBehavior.call(this, content, data);
-}
-buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
-	onTap: { value:  function(button){
-		if(tempVal != "" && startMeasurementVal !=  "" && endMeasurementVal != ""){
+			if(tempVal != "" && startMeasurementVal !=  "" && endMeasurementVal != ""){
 			fromOneToOther();
 		}
-	}}
-});
-
-
-var myButtonTemplate = BUTTONS.Button.template(function($){ return{
-	bottom:10, left:50, right:50,
-	contents:[
-		new Label({left:0, right:0, height:20, string:$.textForLabel, style:bigText})
-	],
-	behavior: new buttonBehavior
+	}}})
 }});
 
 
@@ -146,15 +132,15 @@ var myButtonTemplate = BUTTONS.Button.template(function($){ return{
 var slider = new mySlider({ min:-50, max:115, value:33,  });
 var startMeasurement = new myStartMeasurement({ buttonNames: "Fahrenheit,Celsius,Kelvin" });
 var endMeasurement = new myEndMeasurement({ buttonNames: "Fahrenheit,Celsius,Kelvin" });
-var button = new myButtonTemplate({textForLabel:"Update"});
 
 
 //main
-var mainCon = new Container({left:0, right:0, top:0, bottom:0, skin: greyS});
+var mainCon = new Container({left:0, right:0, top:0, bottom:0, skin: lightBlueS});
 application.add(mainCon);
 mainCon.add(myLabel);
+mainCon.add(myFromLabel);
+mainCon.add(myToLabel);
 mainCon.add(myConvertedLabel);
 mainCon.add(startMeasurement);
 mainCon.add(endMeasurement);
 mainCon.add(slider);
-mainCon.add(button);
