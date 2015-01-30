@@ -1,15 +1,16 @@
 var THEME = require('themes/flat/theme');
 var SLIDERS = require('controls/sliders');
-var tempVal = 10;
-var convertedVal = 1;
+var tempVal = "";
+var convertedVal = "";
 var BUTTONS = require('controls/buttons');
-var startMeasurementVal = "none";
-var endMeasurementVal = "none";
+var startMeasurementVal = "";
+var endMeasurementVal = "";
 
 //skins and styles
 var whiteS = new Skin({fill:"white"});
 var greyS = new Skin({fill:"grey"});
 var labelStyle = new Style( { font: "bold 40px", color:"white" } );
+var bigText = new Style({font:"bold 20px", color:"#333333"});
 
 //slider info
 var myLabel = new Label({left:0, right:0, height: 40, top: 100, string: "", style: labelStyle})
@@ -22,11 +23,23 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 			SLIDERS.HorizontalSliderBehavior.prototype.onValueChanged.call(this, container);
 			//tempVal.onValueChanged.call(mainCon, container);
 			tempVal = this.data.value;
-			trace("Value is: " + tempVal + "\n");
 			mainCon.remove(myLabel);
 			myLabel = new Label({left:0, right:0, height: 30, top: 40, string: tempVal, style: labelStyle})
-			
-			//from Fahrenheit to all
+			fromOneToOther();		
+			mainCon.add(myLabel);	
+	}}})
+}});
+
+//conversion Function
+function convertFunction(measure) {
+	convertedVal = tempVal;
+	mainCon.remove(myConvertedLabel);
+	myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: measure, style: labelStyle})
+	mainCon.add(myConvertedLabel);
+};
+
+///from Fahrenheit,Celsius,Kelvin to all
+function fromOneToOther(){
 			if (startMeasurementVal == "Fahrenheit") {
 				if (endMeasurementVal == "Fahrenheit") {
 					convertedVal = tempVal;
@@ -73,18 +86,6 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 					convertFunction(convertedVal);
 				}
 			}
-			
-			
-			mainCon.add(myLabel);	
-	}}})
-}});
-
-//conversion Function
-function convertFunction(measure) {
-	convertedVal = tempVal;
-	mainCon.remove(myConvertedLabel);
-	myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: measure, style: labelStyle})
-	mainCon.add(myConvertedLabel);
 };
 
 //measurement
@@ -107,7 +108,26 @@ var myEndMeasurement = BUTTONS.RadioGroup.template(function($){ return{
 }});
 
 
-//convert
+//Button
+var buttonBehavior = function(content, data){
+	BUTTONS.ButtonBehavior.call(this, content, data);
+}
+buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
+	onTap: { value:  function(button){
+		trace("Button was tapped.\n");
+		if(tempVal != "" && startMeasurementVal !=  "" && endMeasurementVal != ""){
+			fromOneToOther();
+		}
+	}}
+});
+
+var myButtonTemplate = BUTTONS.Button.template(function($){ return{
+	bottom:10, left:50, right:50,
+	contents:[
+		new Label({left:0, right:0, height:20, string:$.textForLabel, style:bigText})
+	],
+	behavior: new buttonBehavior
+}});
 
 
 
@@ -115,6 +135,7 @@ var myEndMeasurement = BUTTONS.RadioGroup.template(function($){ return{
 var slider = new mySlider({ min:-50, max:115, value:33,  });
 var startMeasurement = new myStartMeasurement({ buttonNames: "Fahrenheit,Celsius,Kelvin" });
 var endMeasurement = new myEndMeasurement({ buttonNames: "Fahrenheit,Celsius,Kelvin" });
+var button = new myButtonTemplate({textForLabel:"Update"});
 
 
 //main
@@ -125,3 +146,5 @@ mainCon.add(myConvertedLabel);
 mainCon.add(startMeasurement);
 mainCon.add(endMeasurement);
 mainCon.add(slider);
+mainCon.add(button);
+
