@@ -53,13 +53,26 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 					convertFunction(convertedVal);
 				}
 				else if (endMeasurementVal == "Kelvin") {
-					convertedVal = tempVal + 273.15
+					convertedVal = tempVal + 273.15;
 					convertFunction(convertedVal);
 				}
 			}
 			
 			//from Kelvin to all
-			
+			if (startMeasurementVal == "Kelvin") {
+				if (endMeasurementVal == "Fahrenheit") {
+					convertedVal = ((tempVal - 273.15) * 1.8) + 32;
+					convertFunction(convertedVal);
+				}
+				else if (endMeasurementVal == "Celsius") {
+					convertedVal = tempVal - 273.15;
+					convertFunction(convertedVal);
+				}
+				else if (endMeasurementVal == "Kelvin") {
+					convertedVal = tempVal;
+					convertFunction(convertedVal);
+				}
+			}
 			
 			
 			mainCon.add(myLabel);	
