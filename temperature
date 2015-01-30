@@ -1,11 +1,16 @@
 var THEME = require('themes/flat/theme');
 var SLIDERS = require('controls/sliders');
 var tempVal = 10
+var BUTTONS = require('controls/buttons');
 
+
+//skins and styles
+var whiteS = new Skin({fill:"white"});
 var greyS = new Skin({fill:"grey"});
 var labelStyle = new Style( { font: "bold 40px", color:"white" } );
-var myLabel = new Label({left:0, right:0, height: 40, top: 100, string: "", style: labelStyle})
 
+//slider info
+var myLabel = new Label({left:0, right:0, height: 40, top: 100, string: "", style: labelStyle})
 
 var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 	height:50, left:50, right:50,
@@ -16,14 +21,29 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 			tempVal = this.data.value;
 			trace("Value is: " + tempVal + "\n");
 			mainCon.remove(myLabel);
-			myLabel = new Label({left:0, right:0, height: 40, top: 100, string: tempVal, style: labelStyle})
+			myLabel = new Label({left:0, right:0, height: 40, top: 40, string: tempVal, style: labelStyle})
 			mainCon.add(myLabel);
 	}}})
 }});
 
-var slider = new mySlider({ min:0, max:100, value:50,  });
+//measurement
+var myMeasurement = BUTTONS.RadioGroup.template(function($){ return{
+	top:100, bottom:50, left:50, right:50,
+	behavior: Object.create(BUTTONS.RadioGroupBehavior.prototype, {
+		onRadioButtonSelected: { value: function(buttonName){
+			trace("measurement" + buttonName + " was selected.\n");
+	}}})
+}});
 
+
+// calls
+var slider = new mySlider({ min:-50, max:115, value:33,  });
+var measurement = new myMeasurement({ buttonNames: "Fahrenheit,Celsius,Kelvin" });
+
+
+//main
 var mainCon = new Container({left:0, right:0, top:0, bottom:0, skin: greyS});
 application.add(mainCon);
 mainCon.add(myLabel);
+mainCon.add(measurement);
 mainCon.add(slider);
