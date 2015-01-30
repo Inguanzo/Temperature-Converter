@@ -1,0 +1,29 @@
+var THEME = require('themes/flat/theme');
+var SLIDERS = require('controls/sliders');
+var tempVal = 10
+
+var greyS = new Skin({fill:"grey"});
+var labelStyle = new Style( { font: "bold 40px", color:"white" } );
+var myLabel = new Label({left:0, right:0, height: 40, top: 100, string: "", style: labelStyle})
+
+
+var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
+	height:50, left:50, right:50,
+	behavior: Object.create(SLIDERS.HorizontalSliderBehavior.prototype, {
+		onValueChanged: { value: function(container){
+			SLIDERS.HorizontalSliderBehavior.prototype.onValueChanged.call(this, container);
+			//tempVal.onValueChanged.call(mainCon, container);
+			tempVal = this.data.value;
+			trace("Value is: " + tempVal + "\n");
+			mainCon.remove(myLabel);
+			myLabel = new Label({left:0, right:0, height: 40, top: 100, string: tempVal, style: labelStyle})
+			mainCon.add(myLabel);
+	}}})
+}});
+
+var slider = new mySlider({ min:0, max:100, value:50,  });
+
+var mainCon = new Container({left:0, right:0, top:0, bottom:0, skin: greyS});
+application.add(mainCon);
+mainCon.add(myLabel);
+mainCon.add(slider);
