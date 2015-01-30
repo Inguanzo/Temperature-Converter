@@ -3,8 +3,8 @@ var SLIDERS = require('controls/sliders');
 var tempVal = 10;
 var convertedVal = 1;
 var BUTTONS = require('controls/buttons');
-var measurementVal = "none";
-
+var startMeasurementVal = "none";
+var endMeasurementVal = "none";
 
 //skins and styles
 var whiteS = new Skin({fill:"white"});
@@ -24,35 +24,54 @@ var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 			tempVal = this.data.value;
 			trace("Value is: " + tempVal + "\n");
 			mainCon.remove(myLabel);
-			myLabel = new Label({left:0, right:0, height: 40, top: 40, string: tempVal, style: labelStyle})
+			myLabel = new Label({left:0, right:0, height: 30, top: 40, string: tempVal, style: labelStyle})
 			
-			if (measurementVal == "Fahrenheit") {
-				convertedVal = tempVal;
-				mainCon.remove(myConvertedLabel);
-				myConvertedLabel = new Label({left:0, right:0, height: 40, bottom: 40, string: convertedVal, style: labelStyle})
-				mainCon.add(myConvertedLabel);
+			if (startMeasurementVal == "Fahrenheit") {
+				if (endMeasurementVal == "Fahrenheit") {
+					convertedVal = tempVal;
+					mainCon.remove(myConvertedLabel);
+					myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: "Faren", style: labelStyle})
+					mainCon.add(myConvertedLabel);
+				}
+				else if (endMeasurementVal == "Celsius") {
+					convertedVal = tempVal;
+					mainCon.remove(myConvertedLabel);
+					myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: "Celsius", style: labelStyle})
+					mainCon.add(myConvertedLabel);
+				}
+				else if (endMeasurementVal == "Kelvin") {
+					convertedVal = tempVal;
+					mainCon.remove(myConvertedLabel);
+					myConvertedLabel = new Label({left:0, right:0, height: 30, bottom: 40, string: "Kelvin", style: labelStyle})
+					mainCon.add(myConvertedLabel);
+				}
 			}		
 			
 			mainCon.add(myLabel);	
 	}}})
 }});
 
+//
+function myFunction() {
+	var x = 0;
+};
+
 //measurement
 var myStartMeasurement = BUTTONS.RadioGroup.template(function($){ return{
 	top:100, bottom:50, left:50, right:50,
 	behavior: Object.create(BUTTONS.RadioGroupBehavior.prototype, {
 		onRadioButtonSelected: { value: function(buttonName){
-			trace("measurement:" + buttonName + " was selected.\n");
-			measurementVal = buttonName;
-			trace("val set to:" + measurementVal);
+			startMeasurementVal = buttonName;
 	}}})
 }});
 
 var myEndMeasurement = BUTTONS.RadioGroup.template(function($){ return{
-	top:300, bottom:10, left:50, right:50,
+	bottom:100, left:50, right:50,
 	behavior: Object.create(BUTTONS.RadioGroupBehavior.prototype, {
 		onRadioButtonSelected: { value: function(buttonName){
-			trace("measurement:" + buttonName + " was selected.\n");
+			trace("end measurement:" + buttonName + " was selected.\n");
+			endMeasurementVal = buttonName;
+			
 	}}})
 }});
 
