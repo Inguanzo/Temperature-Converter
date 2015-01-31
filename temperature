@@ -5,6 +5,8 @@ var convertedVal = "";
 var BUTTONS = require('controls/buttons');
 var startMeasurementVal = "";
 var endMeasurementVal = "";
+var started = "False"
+var lastSelected = ""
 
 
 //skins and styles
@@ -21,30 +23,32 @@ var bigText = new Style({font:"bold 20px", color:"#333333"});
 
 //constant labels
 var myFromLabel = new Label({left:0, right:250, height: 20, top: 10, string: "From:", style: smallLabelStyle})
-var myToLabel = new Label({left:0, right:250, height: 20, bottom: 200, string: "To:", style: smallLabelStyle})
+var myToLabel = new Label({left:0, right:250, height: 20, bottom: 160, string: "To:", style: smallLabelStyle})
 
 
 //slider info
-var myLabel = new Label({left:0, right:0, height: 20, top: 60, string: "start", style: labelStyle})
-var myConvertedLabel = new Label({left:0, right:0, height: 20, bottom: 60, string: "", style: labelStyle})
+var myLabel = new Label({left:0, right:0, height: 20, top: 30, string: "start", style: labelStyle})
+var myConvertedLabel = new Label({left:0, right:0, height: 20, bottom: 130, string: "", style: labelStyle})
 
 var mySlider = SLIDERS.HorizontalSlider.template(function($){ return{
 	height:50, left:50, right:50,
 	behavior: Object.create(SLIDERS.HorizontalSliderBehavior.prototype, {
 		onValueChanged: { value: function(container){
 			SLIDERS.HorizontalSliderBehavior.prototype.onValueChanged.call(this, container);
+			if(started == "False"){
+				myLabel.style = smallLabelStyle;
+				myLabel.string = "Select Value";
+			} else {
+				myLabel.style = labelStyle;
+				myLabel.string = tempVal;		
+			}
+			started = "True";
 			tempVal = Math.round(this.data.value);
-			myLabel.string = tempVal;
-			fromOneToOther();		
+			
+			fromOneToOther();
+					
 	}}})
 }});
-
-
-function headerChange() {
-	if(changeStart){
-	
-	};
-};
 
 
 //conversion Function
@@ -107,22 +111,31 @@ function fromOneToOther(){
 
 //measurement
 var myStartMeasurement = BUTTONS.RadioGroup.template(function($){ return{
-	top:100, left:50, right:50,
+	top:60, left:50, right:50,
 	behavior: Object.create(BUTTONS.RadioGroupBehavior.prototype, {
 		onRadioButtonSelected: { value: function(buttonName){
 			startMeasurementVal = buttonName;
+			if(lastSelected == "bottom") {
+				myLabel.style = smallLabelStyle;
+				myLabel.string = "Select Value";
+				myConvertedLabel.string = "";
+				lastSelected = "top";
+			}
 	}}})
 }});
 
 
 var myEndMeasurement = BUTTONS.RadioGroup.template(function($){ return{
-	bottom:100, left:50, right:50,
+	bottom:30, left:50, right:50,
 	behavior: Object.create(BUTTONS.RadioGroupBehavior.prototype, {
 		onRadioButtonSelected: { value: function(buttonName){
-			trace("end measurement:" + buttonName + " was selected.\n");
 			endMeasurementVal = buttonName;
 			if(tempVal != "" && startMeasurementVal !=  "" && endMeasurementVal != ""){
-			fromOneToOther();
+			fromOneToOther();	
+			lastSelected = "bottom"
+			if(myLabel.string == "Select Value") {
+				myConvertedLabel.string = "";
+			}			
 		}
 	}}})
 }});
@@ -135,8 +148,29 @@ var endMeasurement = new myEndMeasurement({ buttonNames: "Fahrenheit,Celsius,Kel
 
 
 //main
+var redS = new Skin({fill:"#F4C2C2"});
+var blueS = new Skin({fill:"#D19FE8"});
+var whiteSS = new Skin({
+	fill:"89CFF0", 
+	borders:{left:0, right:0, top:15, bottom:15}, 
+	stroke:"gray"
+});
 var mainCon = new Container({left:0, right:0, top:0, bottom:0, skin: lightBlueS});
+var col = new Column({
+	left:0, right:0, top:0, bottom:0,
+	contents:[
+		new Line({left:0, right:0, top:0, bottom:0,height: 80, skin: redS}),
+		new Line({left:0, right:0, top:0, bottom:0, skin: whiteSS,
+			contents:[
+				new Content({left:0, right:0, top:0, bottom:0, skin: whiteSS}),
+			]
+		}),
+		new Line({left:0, right:0, top:0, bottom:0, height: 80, skin: blueS})
+	]
+});
+	 
 application.add(mainCon);
+mainCon.add(col);
 mainCon.add(myLabel);
 mainCon.add(myFromLabel);
 mainCon.add(myToLabel);
