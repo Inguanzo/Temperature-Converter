@@ -11,10 +11,20 @@ var serviceURL = "https://api.flickr.com/services/feeds/photos_public.gne?";
 		nojsoncallback: 1,
 		tags: tags});
 var myPic = "";
+var SCROLLER = require('mobile/scroller');
+
+var scroller = SCROLLER.VerticalScroller.template(function($){ return{
+    contents: $.contents,
+    name: $.name
+}});
+
+var SCROLLER = require('mobile/scroller');
 
 var mainColumn = new Column({
 	left: 0, right: 0, top: 0, bottom: 0,
 	skin: whiteSkin,
+	contents:[
+		new scroller({ name: "comicScroller", left: 0, right: 0, 
 	contents:[
 		//new Label({left: 0, right: 0, top:20, height: 20, string: "Your IP:", style: titleStyle}),
 		new Label({left: 0, right: 0, height: 40, string: "Loading...", style: resultStyle, name:"numLabel"}),
@@ -22,6 +32,7 @@ var mainColumn = new Column({
 		new Label({left: 0, right: 0, height: 40, string: "Loading...", style: resultStyle, name:"imageLabel"}),
 		new Picture({left:10, right:0, height: 200,  url: "http://imgs.xkcd.com/comics/staceys_dad.jpg"}),
 	]
+	}), ]
 });
 
 Handler.bind("/getNum", {
