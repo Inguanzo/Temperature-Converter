@@ -1,3 +1,5 @@
+var THEME = require('themes/flat/theme');
+
 var whiteSkin = new Skin({fill:"white"});
 
 var titleStyle = new Style({font:"bold 40px", color:"black"});
