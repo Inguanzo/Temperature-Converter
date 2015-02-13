@@ -5,7 +5,7 @@ var resultStyle = new Style({font:"25px", color:"black"});
 //var myData = JSON.parse("https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=1c3e423fa49c61f7a76964f5f667da97&user_id=pizza&per_page=1&format=json&nojsoncallback=1");
 
 var serviceURL = "https://api.flickr.com/services/feeds/photos_public.gne?";
-	var tags = "candy";
+	var tags = "happiness";
 	var url = serviceURL + serializeQuery({
 		format: "json",
 		nojsoncallback: 1,
@@ -27,14 +27,13 @@ var mainColumn = new Column({
 Handler.bind("/getNum", {
 	
 	onInvoke: function(handler, message){ //.invoke then jumps to oncomplete
-		//handler.invoke(new Message("https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=1c3e423fa49c61f7a76964f5f667da97&user_id=cats&per_page=1&format=json&nojsoncallback=1"), Message.TEXT);
 		handler.invoke(new Message( url ), Message.TEXT);
 	},
 	onComplete: function(handler, message, json){ 
 		//var temp = JSON.parse(json);
 		//mainColumn.numLabel.string = json.photo;
-		json = json.split('{');
-		json = json[3];
+		json = json.split('"media"');
+		json = json[1];
 		json = json.split(':"');
 		json = json[1];
 		json = json.split('"');
