@@ -15,7 +15,7 @@ var scroller = SCROLLER.VerticalScroller.template(function($){ return{
     name: $.name
 }});
 
-var bigText = new Style({font:"bold 55px", color:"#333333"});
+var bigText = new Style({font:"bold 25px", color:"#333333"});
 
 var buttonBehavior = function(content, data){
 	BUTTONS.ButtonBehavior.call(this, content, data);
@@ -33,17 +33,17 @@ buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 });
 
 var myButtonTemplate = BUTTONS.Button.template(function($){ return{
-	top:50, bottom:50, left:50, right:50,
+	bottom:20, left:200, right:30,
 	contents:[
-		new Label({left:0, right:0, height:50, string:$.textForLabel, style:bigText})
+		new Label({left:0, right:0, height:30, string:$.textForLabel, style:bigText})
 	],
 	behavior: new buttonBehavior
 }});
 
-var button = new myButtonTemplate({textForLabel:"Click Me!"});
+var button = new myButtonTemplate({textForLabel:"Next"});
 
-
-
+var comicTitle = "";
+//var header = new Label({height: 40, string: "", style: resultStyle}),
 
 /*
 FLICKR
@@ -94,6 +94,7 @@ Handler.bind("/getTitle", {
 	},
 	onComplete: function(handler, message, json){
 		//mainColumn.titleLabel.string = json.safe_title;
+		header.string = json.safe_title;
 		trace("Title is: " + json.safe_title + "\n"); //json.time (time) how json returns
 	}
 });
@@ -115,6 +116,7 @@ Handler.bind("/getImage", {
 Main
 */
 var xkImg;
+var header;
 var mainColumn = new Column({
 	left: 0, right: 0, top: 0, bottom: 0,
 	skin: whiteSkin,
@@ -126,6 +128,8 @@ var mainColumn = new Column({
 		new Label({left: 0, right: 0, height: 20, string: "Time:", style: titleStyle}),
 		new Label({left: 0, right: 0, height: 40, string: "Loading...", style: resultStyle, name:"imageLabel"}),*/
 		xkImg = new Picture({left:10, right:0, height: 200,  url: "http://imgs.xkcd.com/comics/barrel_cropped_(1).jpg"}),
+		header = new Label({top:20, height: 40, string: "loading...", style: resultStyle}),	
+		
 	]
 	}), ]
 });
@@ -141,6 +145,7 @@ application.behavior = Object.create(Behavior.prototype, {
 		application.invoke(new Message("/getTitle"));
 		application.invoke(new Message("/getImage"));
 		mainColumn.add(button);
+		//mainColumn.add(header);
 
 	}}
 });
