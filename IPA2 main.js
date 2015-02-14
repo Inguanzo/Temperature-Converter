@@ -8,6 +8,7 @@ var resultStyle = new Style({font:"25px", color:"black"});
 var SCROLLER = require('mobile/scroller');
 var BUTTONS = require('controls/buttons');
 var comicNumber = 1;
+var xImage = "";
 
 var scroller = SCROLLER.VerticalScroller.template(function($){ return{
     contents: $.contents,
@@ -26,6 +27,7 @@ buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 		trace("comic number has increased to: " + comicNumber + "\n");
 		xUrl = "http://xkcd.com/" + comicNumber + "/info.0.json";
 		application.invoke(new Message("/getTitle"));
+		application.invoke(new Message("/getImage"));
 		
 	}}
 });
@@ -39,11 +41,6 @@ var myButtonTemplate = BUTTONS.Button.template(function($){ return{
 }});
 
 var button = new myButtonTemplate({textForLabel:"Click Me!"});
-
-
-
-
-
 
 
 
@@ -101,13 +98,23 @@ Handler.bind("/getTitle", {
 	}
 });
 
+Handler.bind("/getImage", {
+	onInvoke: function(handler, message){
+		handler.invoke(new Message(xUrl), Message.JSON); //http path
+	},
+	onComplete: function(handler, message, json){
+		//mainColumn.titleLabel.string = json.safe_title;
+		trace("Image String is: " + json.img + "\n"); //json.time (time) how json returns
+		xkImg.url = json.img;
+	}
+});
 
 
 
 /*
 Main
 */
-
+var xkImg;
 var mainColumn = new Column({
 	left: 0, right: 0, top: 0, bottom: 0,
 	skin: whiteSkin,
@@ -118,7 +125,7 @@ var mainColumn = new Column({
 		new Label({left: 0, right: 0, height: 40, string: "Loading...", style: resultStyle, name:"numLabel"}),
 		new Label({left: 0, right: 0, height: 20, string: "Time:", style: titleStyle}),
 		new Label({left: 0, right: 0, height: 40, string: "Loading...", style: resultStyle, name:"imageLabel"}),*/
-		new Picture({left:10, right:0, height: 200,  url: "http://imgs.xkcd.com/comics/staceys_dad.jpg"}),
+		xkImg = new Picture({left:10, right:0, height: 200,  url: "http://imgs.xkcd.com/comics/barrel_cropped_(1).jpg"}),
 	]
 	}), ]
 });
@@ -132,6 +139,7 @@ application.behavior = Object.create(Behavior.prototype, {
 		application.add(mainColumn);
 		application.invoke(new Message("/getNum"));
 		application.invoke(new Message("/getTitle"));
+		application.invoke(new Message("/getImage"));
 		mainColumn.add(button);
 
 	}}
