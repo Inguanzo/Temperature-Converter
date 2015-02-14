@@ -5,6 +5,8 @@ var THEME = require('themes/flat/theme');
 var whiteSkin = new Skin({fill:"white"});
 var titleStyle = new Style({font:"bold 40px", color:"black"});
 var resultStyle = new Style({font:"25px", color:"black"});
+var shortStyle = new Style({font:"14px", color:"black"});
+
 var SCROLLER = require('mobile/scroller');
 var BUTTONS = require('controls/buttons');
 var comicNumber = 1;
@@ -127,7 +129,11 @@ Handler.bind("/getTitle", {
 		var myTitle = json.safe_title;
 		header.string = myTitle;
 		splitTags = myTitle.split(' ');		
-		
+		if(splitTags.length > 4){
+			header.style = shortStyle;
+		} else {
+			header.style = resultStyle;
+		}
 		biggest = "";
 		for(var i = 0; i < splitTags.length; i++){
 			if(biggest < splitTags[i].length){
