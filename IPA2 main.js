@@ -2,10 +2,12 @@
 Features and Settings
 */
 var THEME = require('themes/flat/theme');
-var whiteSkin = new Skin({fill:"white"});
+var whiteSkin = new Skin({fill:"#800000"});
 var titleStyle = new Style({font:"bold 40px", color:"black"});
-var resultStyle = new Style({font:"25px", color:"black"});
-var shortStyle = new Style({font:"14px", color:"black"});
+var resultStyle = new Style({font:"bold 25px", color:"gray"});
+var shortStyle = new Style({font:"bold 14px", color:"gray"});
+var loadingStyle = new Style({font:"30px", color:"yellow"});
+
 
 var SCROLLER = require('mobile/scroller');
 var BUTTONS = require('controls/buttons');
@@ -17,7 +19,7 @@ var scroller = SCROLLER.VerticalScroller.template(function($){ return{
     name: $.name
 }});
 
-var bigText = new Style({font:"bold 25px", color:"#333333"});
+var bigText = new Style({font:"bold 25px", color:"#800000"});
 
 var buttonBehavior = function(content, data){
 	BUTTONS.ButtonBehavior.call(this, content, data);
@@ -29,6 +31,7 @@ buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 		application.invoke(new Message("/getTitle"));		
 		application.invoke(new Message("/getImage"));
 		mainColumn.remove(myPic);	
+		mainColumn.add(below);
 		
 		
 	}}
@@ -58,13 +61,13 @@ buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 		application.invoke(new Message("/getTitle"));		
 		application.invoke(new Message("/getImage"));
 		mainColumn.remove(myPic);	
-		
+		mainColumn.add(below);
 		
 	}}
 });
 
 var myButtonTemplate = BUTTONS.Button.template(function($){ return{
-	top:-50, left:30, right:200,
+	top:-50, left:30, right:200, 
 	contents:[
 		new Label({left:0, right:0, height:30, string:$.textForLabel, style:bigText})
 	],
@@ -100,8 +103,17 @@ Handler.bind("/getNum", {
 		handler.invoke(new Message(flickrUrl()), Message.TEXT);
 	},
 	onComplete: function(handler, message, json){ 
-		trace("json is: " + json + "\n");
+		//trace("json is: " + json + "\n");
 		trace("key word is : " + biggest + "\n"); //json.time (time) how json returns
+		
+		photoTag = json.split('"tags"');
+		photoTag = photoTag[1];
+		photoTag = photoTag.split(':"');
+		photoTag = photoTag[0];
+		photoTag = photoTag.split('}');
+		photoTag = photoTag[0];
+		trace("Flickr Taged photo: " + photoTag + "\n"); //json.time (time) how json returns
+		
 		myJson = json.split('"media"');
 		myJson = myJson[1];
 		myJson = myJson.split(':"');
@@ -109,6 +121,7 @@ Handler.bind("/getNum", {
 		myJson = myJson.split('"');
 		myJson = myJson[0];
 		myPic =	new Picture({left:10, right:10, top:10, height: 170, width:160,  url: myJson}),
+		mainColumn.remove(below);
 		mainColumn.add(myPic);
 		
 	}
@@ -161,6 +174,8 @@ Handler.bind("/getImage", {
 /*
 Main
 */
+var below = new Label({top:100,left:10, right:10, height: 40, width: 80, string: "loading Flickr...", style: loadingStyle});		
+
 var xkImg;
 var flickrImg;
 var header;
@@ -172,9 +187,12 @@ var mainColumn = new Column({
 		//new scroller({ name: "comicScroller", left: 0, right: 0, 
 	contents:[
 		xkImg = new Picture({left:10, right:10, top:10, height: 170,  url: ""}),
-		header = new Label({top:20,left:10, right:10, height: 40, width: 80, string: "loading...", style: resultStyle}),	
-	]
+		header = new Label({top:20,left:10, right:10, height: 40, width: 80, string: "loading...", style: loadingStyle}),		
+		
+		]
+		
 });
+
 
 
 application.behavior = Object.create(Behavior.prototype, {	
@@ -183,6 +201,7 @@ application.behavior = Object.create(Behavior.prototype, {
 		application.invoke(new Message("/getImage"));
 		mainColumn.add(nextButton);
 		mainColumn.add(prevButton);
+		mainColumn.add(below);
 		application.add(mainColumn);
 		
 
