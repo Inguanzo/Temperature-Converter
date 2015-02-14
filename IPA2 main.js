@@ -23,12 +23,8 @@ var buttonBehavior = function(content, data){
 buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 	onTap: { value:  function(button){
 		comicNumber += 1;
-		trace("Button was tapped.\n");
-		trace("comic number has increased to: " + comicNumber + "\n");
 		xUrl = "http://xkcd.com/" + comicNumber + "/info.0.json";
-		application.invoke(new Message("/getTitle"));
-		application.invoke(new Message("/getNum"));
-		
+		application.invoke(new Message("/getTitle"));		
 		application.invoke(new Message("/getImage"));
 		
 	}}
@@ -49,11 +45,15 @@ var comicTitle = "";
 
 
 var serviceURL = "https://api.flickr.com/services/feeds/photos_public.gne?";
-var tags = biggest;
-var url = serviceURL + serializeQuery({
+
+//var tags = "pizza";
+function flickrUrl() {
+    var url = serviceURL + serializeQuery({
 		format: "json",
 		nojsoncallback: 1,
 		tags: tags});
+	return url;
+	}
 var myPic = "";
 var SCROLLER = require('mobile/scroller');
 
@@ -64,9 +64,10 @@ FLICKR
 Handler.bind("/getNum", {
 	
 	onInvoke: function(handler, message){ //.invoke then jumps to oncomplete
-		handler.invoke(new Message( url ), Message.TEXT);
+		handler.invoke(new Message(flickrUrl()), Message.TEXT);
 	},
 	onComplete: function(handler, message, json){ 
+		trace("json is: " + json + "\n");
 		myJson = json.split('"media"');
 		myJson = myJson[1];
 		myJson = myJson.split(':"');
@@ -75,22 +76,12 @@ Handler.bind("/getNum", {
 		myJson = myJson[0];
 		
 		//json = json.replace( "_m.jpg", "_b.jpg" );
-		trace("Num is: " + myJson + "\n");
+		trace("flikr url is: " + myJson + "\n");
 		myPic =	new Picture({left:10, right:0, height: 200,  url: myJson}),
 	
 		mainColumn.add(myPic);
-		biggest = "";
-		for(var i = 0; i < splitTags.length; i++){
-			if(biggest < splitTags[i].length){
-				biggest = splitTags[i];
-			}
-		}
-		trace("biggest word is : " + biggest + "\n"); //json.time (time) how json returns
 		
-		var url = serviceURL + serializeQuery({
-		format: "json",
-		nojsoncallback: 1,
-		tags: biggest});
+		trace("biggest word is : " + biggest + "\n"); //json.time (time) how json returns
 	}
 });
 
@@ -105,16 +96,21 @@ var splitTags = "";
 Handler.bind("/getTitle", {
 	onInvoke: function(handler, message){
 		handler.invoke(new Message(xUrl), Message.JSON); //http path
-		trace("commic num: " + comicNumber + "\n");
 	},
 	onComplete: function(handler, message, json){
 		//mainColumn.titleLabel.string = json.safe_title;
 		var myTitle = json.safe_title;
 		header.string = myTitle;
-		splitTags = myTitle.split(' ');
+		splitTags = myTitle.split(' ');		
 		
-		trace("Split Title is: " + splitTags + "\n"); //json.time (time) how json returns
-		
+		biggest = "";
+		for(var i = 0; i < splitTags.length; i++){
+			if(biggest < splitTags[i].length){
+				biggest = splitTags[i];
+			}
+		}
+		tags = biggest;
+		application.invoke(new Message("/getNum"));
 		
 	}
 });
@@ -125,7 +121,6 @@ Handler.bind("/getImage", {
 	},
 	onComplete: function(handler, message, json){
 		//mainColumn.titleLabel.string = json.safe_title;
-		trace("Image String is: " + json.img + "\n"); //json.time (time) how json returns
 		xkImg.url = json.img;
 	}
 });
@@ -158,8 +153,6 @@ var mainColumn = new Column({
 application.behavior = Object.create(Behavior.prototype, {	
 	onLaunch: { value: function(application, data){
 		application.invoke(new Message("/getTitle"));
-		
-		application.invoke(new Message("/getNum"));
 		application.invoke(new Message("/getImage"));
 		mainColumn.add(button);
 		application.add(mainColumn);
