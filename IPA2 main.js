@@ -9,7 +9,6 @@ var SCROLLER = require('mobile/scroller');
 var BUTTONS = require('controls/buttons');
 var comicNumber = 1;
 var xImage = "";
-
 var scroller = SCROLLER.VerticalScroller.template(function($){ return{
     contents: $.contents,
     name: $.name
@@ -45,11 +44,9 @@ var button = new myButtonTemplate({textForLabel:"Next"});
 var comicTitle = "";
 //var header = new Label({height: 40, string: "", style: resultStyle}),
 
-/*
-FLICKR
-*/
+
 var serviceURL = "https://api.flickr.com/services/feeds/photos_public.gne?";
-	var tags = "happiness";
+	var tags = "pizza, flowers";
 	var url = serviceURL + serializeQuery({
 		format: "json",
 		nojsoncallback: 1,
@@ -58,9 +55,8 @@ var myPic = "";
 var SCROLLER = require('mobile/scroller');
 
 /*
-XKCD
+FLICKR
 */
-
 
 Handler.bind("/getNum", {
 	
@@ -68,25 +64,30 @@ Handler.bind("/getNum", {
 		handler.invoke(new Message( url ), Message.TEXT);
 	},
 	onComplete: function(handler, message, json){ 
-		json = json.split('"media"');
-		json = json[1];
-		json = json.split(':"');
-		json = json[1];
-		json = json.split('"');
-		json = json[0];
+		myJson = json.split('"media"');
+		myJson = myJson[1];
+		myJson = myJson.split(':"');
+		myJson = myJson[1];
+		myJson = myJson.split('"');
+		myJson = myJson[0];
 		
 		//json = json.replace( "_m.jpg", "_b.jpg" );
-		trace("Num is: " + json + "\n");
+		trace("Num is: " + myJson + "\n");
+		myPic =	new Picture({left:10, right:0, height: 200,  url: myJson}),
 	
-		myPic =	new Picture({left:10, right:0, height: 200,  url: json}),
-		//mainColumn.add(myPic);
+		mainColumn.add(myPic);
 		
 	}
 });
 
+/*
+XKCD
+*/
+
+
 var xImage = "";
 var xUrl = "http://xkcd.com/1/info.0.json";
-
+var splitTags = "";
 Handler.bind("/getTitle", {
 	onInvoke: function(handler, message){
 		handler.invoke(new Message(xUrl), Message.JSON); //http path
@@ -94,8 +95,12 @@ Handler.bind("/getTitle", {
 	},
 	onComplete: function(handler, message, json){
 		//mainColumn.titleLabel.string = json.safe_title;
-		header.string = json.safe_title;
-		trace("Title is: " + json.safe_title + "\n"); //json.time (time) how json returns
+		var myTitle = json.safe_title;
+		header.string = myTitle;
+		trace("Title is: " + myTitle + "\n"); //json.time (time) how json returns
+		splitTags = myTitle.split(' ');
+		trace("split title is: " + splitTags + "\n"); //json.time (time) how json returns
+		
 	}
 });
 
@@ -117,17 +122,14 @@ Main
 */
 var xkImg;
 var header;
+var myPic;
 var mainColumn = new Column({
 	left: 0, right: 0, top: 0, bottom: 0,
 	skin: whiteSkin,
 	contents:[
 		new scroller({ name: "comicScroller", left: 0, right: 0, 
 	contents:[
-		/*new Label({left: 0, right: 0, top:20, height: 20, string: "Your IP:", style: titleStyle}),
-		new Label({left: 0, right: 0, height: 40, string: "Loading...", style: resultStyle, name:"numLabel"}),
-		new Label({left: 0, right: 0, height: 20, string: "Time:", style: titleStyle}),
-		new Label({left: 0, right: 0, height: 40, string: "Loading...", style: resultStyle, name:"imageLabel"}),*/
-		xkImg = new Picture({left:10, right:0, height: 200,  url: "http://imgs.xkcd.com/comics/barrel_cropped_(1).jpg"}),
+		xkImg = new Picture({left:10, right:0, height: 200,  url: ""}),
 		header = new Label({top:20, height: 40, string: "loading...", style: resultStyle}),	
 		
 	]
@@ -140,12 +142,12 @@ var mainColumn = new Column({
 
 application.behavior = Object.create(Behavior.prototype, {	
 	onLaunch: { value: function(application, data){
-		application.add(mainColumn);
 		application.invoke(new Message("/getNum"));
 		application.invoke(new Message("/getTitle"));
 		application.invoke(new Message("/getImage"));
 		mainColumn.add(button);
-		//mainColumn.add(header);
+		application.add(mainColumn);
+		
 
 	}}
 });
