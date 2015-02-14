@@ -9,6 +9,7 @@ var SCROLLER = require('mobile/scroller');
 var BUTTONS = require('controls/buttons');
 var comicNumber = 1;
 var xImage = "";
+var biggest = "";
 var scroller = SCROLLER.VerticalScroller.template(function($){ return{
     contents: $.contents,
     name: $.name
@@ -26,6 +27,8 @@ buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 		trace("comic number has increased to: " + comicNumber + "\n");
 		xUrl = "http://xkcd.com/" + comicNumber + "/info.0.json";
 		application.invoke(new Message("/getTitle"));
+		application.invoke(new Message("/getNum"));
+		
 		application.invoke(new Message("/getImage"));
 		
 	}}
@@ -46,8 +49,8 @@ var comicTitle = "";
 
 
 var serviceURL = "https://api.flickr.com/services/feeds/photos_public.gne?";
-	var tags = "pizza, flowers";
-	var url = serviceURL + serializeQuery({
+var tags = biggest;
+var url = serviceURL + serializeQuery({
 		format: "json",
 		nojsoncallback: 1,
 		tags: tags});
@@ -76,7 +79,18 @@ Handler.bind("/getNum", {
 		myPic =	new Picture({left:10, right:0, height: 200,  url: myJson}),
 	
 		mainColumn.add(myPic);
+		biggest = "";
+		for(var i = 0; i < splitTags.length; i++){
+			if(biggest < splitTags[i].length){
+				biggest = splitTags[i];
+			}
+		}
+		trace("biggest word is : " + biggest + "\n"); //json.time (time) how json returns
 		
+		var url = serviceURL + serializeQuery({
+		format: "json",
+		nojsoncallback: 1,
+		tags: biggest});
 	}
 });
 
@@ -97,9 +111,10 @@ Handler.bind("/getTitle", {
 		//mainColumn.titleLabel.string = json.safe_title;
 		var myTitle = json.safe_title;
 		header.string = myTitle;
-		trace("Title is: " + myTitle + "\n"); //json.time (time) how json returns
 		splitTags = myTitle.split(' ');
-		trace("split title is: " + splitTags + "\n"); //json.time (time) how json returns
+		
+		trace("Split Title is: " + splitTags + "\n"); //json.time (time) how json returns
+		
 		
 	}
 });
@@ -142,8 +157,9 @@ var mainColumn = new Column({
 
 application.behavior = Object.create(Behavior.prototype, {	
 	onLaunch: { value: function(application, data){
-		application.invoke(new Message("/getNum"));
 		application.invoke(new Message("/getTitle"));
+		
+		application.invoke(new Message("/getNum"));
 		application.invoke(new Message("/getImage"));
 		mainColumn.add(button);
 		application.add(mainColumn);
