@@ -43,12 +43,9 @@ var myButtonTemplate = BUTTONS.Button.template(function($){ return{
 var button = new myButtonTemplate({textForLabel:"Next"});
 
 var comicTitle = "";
-//var header = new Label({height: 40, string: "", style: resultStyle}),
-
 
 var serviceURL = "https://api.flickr.com/services/feeds/photos_public.gne?";
 
-//var tags = "pizza";
 function flickrUrl() {
     var url = serviceURL + serializeQuery({
 		format: "json",
@@ -69,18 +66,15 @@ Handler.bind("/getNum", {
 		handler.invoke(new Message(flickrUrl()), Message.TEXT);
 	},
 	onComplete: function(handler, message, json){ 
-		trace("biggest word is : " + biggest + "\n"); //json.time (time) how json returns
 		trace("json is: " + json + "\n");
+		trace("key word is : " + biggest + "\n"); //json.time (time) how json returns
 		myJson = json.split('"media"');
 		myJson = myJson[1];
 		myJson = myJson.split(':"');
 		myJson = myJson[1];
 		myJson = myJson.split('"');
 		myJson = myJson[0];
-		
-		//json = json.replace( "_m.jpg", "_b.jpg" );
-		trace("flikr url is: " + myJson + "\n");
-		myPic =	new Picture({left:10, right:0, height: 200,  url: myJson}),
+		myPic =	new Picture({left:10, right:10, bottom:10, height: 170, width:160,  url: myJson}),
 		mainColumn.add(myPic);
 		
 	}
@@ -141,17 +135,10 @@ var mainColumn = new Column({
 	//contents:[
 		//new scroller({ name: "comicScroller", left: 0, right: 0, 
 	contents:[
-		xkImg = new Picture({left:10, right:0, height: 200,  url: ""}),
-		header = new Label({top:20, height: 40, string: "loading...", style: resultStyle}),	
-		//flickrImg = new Picture({left:10, right:0, height: 200,  url: ""}),
-		
-	//]
-	//}), ]
+		xkImg = new Picture({left:10, right:10, top:10, height: 170,  url: ""}),
+		header = new Label({top:20,left:10, right:10, height: 40, width: 80, string: "loading...", style: resultStyle}),	
 	]
 });
-
-
-
 
 
 application.behavior = Object.create(Behavior.prototype, {	
