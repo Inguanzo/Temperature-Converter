@@ -26,6 +26,8 @@ buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
 		xUrl = "http://xkcd.com/" + comicNumber + "/info.0.json";
 		application.invoke(new Message("/getTitle"));		
 		application.invoke(new Message("/getImage"));
+		mainColumn.remove(myPic);	
+		
 		
 	}}
 });
@@ -67,6 +69,7 @@ Handler.bind("/getNum", {
 		handler.invoke(new Message(flickrUrl()), Message.TEXT);
 	},
 	onComplete: function(handler, message, json){ 
+		trace("biggest word is : " + biggest + "\n"); //json.time (time) how json returns
 		trace("json is: " + json + "\n");
 		myJson = json.split('"media"');
 		myJson = myJson[1];
@@ -78,10 +81,8 @@ Handler.bind("/getNum", {
 		//json = json.replace( "_m.jpg", "_b.jpg" );
 		trace("flikr url is: " + myJson + "\n");
 		myPic =	new Picture({left:10, right:0, height: 200,  url: myJson}),
-	
 		mainColumn.add(myPic);
 		
-		trace("biggest word is : " + biggest + "\n"); //json.time (time) how json returns
 	}
 });
 
@@ -131,19 +132,22 @@ Handler.bind("/getImage", {
 Main
 */
 var xkImg;
+var flickrImg;
 var header;
 var myPic;
 var mainColumn = new Column({
 	left: 0, right: 0, top: 0, bottom: 0,
 	skin: whiteSkin,
-	contents:[
-		new scroller({ name: "comicScroller", left: 0, right: 0, 
+	//contents:[
+		//new scroller({ name: "comicScroller", left: 0, right: 0, 
 	contents:[
 		xkImg = new Picture({left:10, right:0, height: 200,  url: ""}),
 		header = new Label({top:20, height: 40, string: "loading...", style: resultStyle}),	
+		//flickrImg = new Picture({left:10, right:0, height: 200,  url: ""}),
 		
+	//]
+	//}), ]
 	]
-	}), ]
 });
 
 
