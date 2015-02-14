@@ -21,7 +21,7 @@ var buttonBehavior = function(content, data){
 	BUTTONS.ButtonBehavior.call(this, content, data);
 }
 buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
-	onTap: { value:  function(button){
+	onTap: { value:  function(nextButton){
 		comicNumber += 1;
 		xUrl = "http://xkcd.com/" + comicNumber + "/info.0.json";
 		application.invoke(new Message("/getTitle"));		
@@ -40,7 +40,39 @@ var myButtonTemplate = BUTTONS.Button.template(function($){ return{
 	behavior: new buttonBehavior
 }});
 
-var button = new myButtonTemplate({textForLabel:"Next"});
+var nextButton = new myButtonTemplate({textForLabel:"Next"});
+
+
+///////////
+var buttonBehavior = function(content, data){
+	BUTTONS.ButtonBehavior.call(this, content, data);
+}
+buttonBehavior.prototype = Object.create(BUTTONS.ButtonBehavior.prototype, {
+	onTap: { value:  function(prevButton){
+		if(comicNumber > 1) {
+		comicNumber -= 1;
+		}
+		xUrl = "http://xkcd.com/" + comicNumber + "/info.0.json";
+		application.invoke(new Message("/getTitle"));		
+		application.invoke(new Message("/getImage"));
+		mainColumn.remove(myPic);	
+		
+		
+	}}
+});
+
+var myButtonTemplate = BUTTONS.Button.template(function($){ return{
+	top:-50, left:30, right:200,
+	contents:[
+		new Label({left:0, right:0, height:30, string:$.textForLabel, style:bigText})
+	],
+	behavior: new buttonBehavior
+}});
+
+var prevButton = new myButtonTemplate({textForLabel:"Prev"});
+
+/////////////
+
 
 var comicTitle = "";
 
@@ -74,7 +106,7 @@ Handler.bind("/getNum", {
 		myJson = myJson[1];
 		myJson = myJson.split('"');
 		myJson = myJson[0];
-		myPic =	new Picture({left:10, right:10, bottom:10, height: 170, width:160,  url: myJson}),
+		myPic =	new Picture({left:10, right:10, top:10, height: 170, width:160,  url: myJson}),
 		mainColumn.add(myPic);
 		
 	}
@@ -83,8 +115,6 @@ Handler.bind("/getNum", {
 /*
 XKCD
 */
-
-
 var xImage = "";
 var xUrl = "http://xkcd.com/1/info.0.json";
 var splitTags = "";
@@ -145,7 +175,8 @@ application.behavior = Object.create(Behavior.prototype, {
 	onLaunch: { value: function(application, data){
 		application.invoke(new Message("/getTitle"));
 		application.invoke(new Message("/getImage"));
-		mainColumn.add(button);
+		mainColumn.add(nextButton);
+		mainColumn.add(prevButton);
 		application.add(mainColumn);
 		
 
